@@ -3048,3 +3048,60 @@
 
 1587517768 c:\users\jongbin\documents\workspace\cpp\winchat-core-wxwidgets\library\mswud\wx\setup.h
 
+1595459575 source:c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\guiframe.cpp
+	"wx/wxprec.h"
+	<wx/wx.h>
+	"GUIFrame.h"
+
+1595459362 c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\library\mswud\wx\setup.h
+
+1595459362 c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\guiframe.h
+	<wx/artprov.h>
+	<wx/xrc/xmlres.h>
+	<wx/string.h>
+	<wx/bitmap.h>
+	<wx/image.h>
+	<wx/icon.h>
+	<wx/menu.h>
+	<wx/gdicmn.h>
+	<wx/font.h>
+	<wx/colour.h>
+	<wx/settings.h>
+	<wx/textctrl.h>
+	<wx/toolbar.h>
+	<wx/sizer.h>
+	<wx/statusbr.h>
+	<wx/frame.h>
+
+1595459362 source:c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\resource.rc
+	<windows.h>
+	"wx/msw/wince/wince.rc"
+	"wx/msw/rcdefs.h"
+
+1595459362 source:c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\winchat_core_wxwidgetsapp.cpp
+	"wx_pch.h"
+	"winchat_core_wxwidgetsApp.h"
+	"winchat_core_wxwidgetsMain.h"
+
+1595459362 c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\winchat_core_wxwidgetsapp.h
+	<wx/app.h>
+
+1595465375 c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\winchat_core_wxwidgetsmain.h
+	<wx/wx.h>
+	"common.h"
+	"winchat_core_wxwidgetsApp.h"
+	"GUIFrame.h"
+
+1595465450 source:c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\winchat_core_wxwidgetsmain.cpp
+	"wx_pch.h"
+	"winchat_core_wxwidgetsMain.h"
+
+1595466035 c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\common.h
+	<string>
+	<cstdlib>
+	<ctime>
+	<fstream>
+
+1595465407 source:c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\common.cpp
+	"common.h"
+

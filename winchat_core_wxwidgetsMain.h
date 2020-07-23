@@ -11,6 +11,7 @@
 #define WINCHAT_CORE_WXWIDGETSMAIN_H
 
 #include <wx/wx.h>
+#include "common.h"
 
 #include "winchat_core_wxwidgetsApp.h"
 

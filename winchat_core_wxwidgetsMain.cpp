@@ -49,10 +49,8 @@ wxString wxbuildinfo(wxbuildinfoformat format)
 winchat_core_wxwidgetsFrame::winchat_core_wxwidgetsFrame(wxFrame *frame)
     : GUIFrame(frame)
 {
-#if wxUSE_STATUSBAR
-    statusBar->SetStatusText(_("Hello Code::Blocks user!"), 0);
-    statusBar->SetStatusText(wxbuildinfo(short_f), 1);
-#endif
+    statusBar->SetStatusText("Winchat is ready", 0);
+    statusBar->SetStatusText("made by jongbin. P", 1);
 }
 
 winchat_core_wxwidgetsFrame::~winchat_core_wxwidgetsFrame()

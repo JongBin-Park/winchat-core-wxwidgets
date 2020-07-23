@@ -9,6 +9,7 @@
 			<Target title="Debug">
 				<Option output="bin/Debug/winchat-core-wxwidgets" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
+				<Option additional_output="library/wxmsw30ud_gcc_custom.dll;library/wxmsw30ud_gl_gcc_custom.dll;" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -64,6 +65,8 @@
 		<Unit filename="GUIFrame.cpp" />
 		<Unit filename="GUIFrame.h" />
 		<Unit filename="WxWizFrame.fbp" />
+		<Unit filename="common.cpp" />
+		<Unit filename="common.h" />
 		<Unit filename="resource.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
