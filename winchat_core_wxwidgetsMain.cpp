@@ -45,12 +45,13 @@ wxString wxbuildinfo(wxbuildinfoformat format)
     return wxbuild;
 }
 
-
 winchat_core_wxwidgetsFrame::winchat_core_wxwidgetsFrame(wxFrame *frame)
     : GUIFrame(frame)
 {
     statusBar->SetStatusText("Winchat is ready", 0);
     statusBar->SetStatusText("made by jongbin. P", 1);
+
+    m_textCtrl1->SetValue((string)Server::getMyIP());
 }
 
 winchat_core_wxwidgetsFrame::~winchat_core_wxwidgetsFrame()
@@ -71,4 +72,52 @@ void winchat_core_wxwidgetsFrame::OnAbout(wxCommandEvent &event)
 {
     wxString msg = wxbuildinfo(long_f);
     wxMessageBox(msg, _("Welcome to..."));
+}
+
+void winchat_core_wxwidgetsFrame::m_tool4OnToolClicked( wxCommandEvent& event )
+{
+    log("서버모드 버튼 클릭");
+    this->svr = new Server(m_textCtrl1->GetValue().ToStdString(), "4564");
+    if ( this->svr->isBind )
+    {
+        if ( !this->svr->isListen )
+        {
+            std::thread runStartup( &Server::startup, *this->svr );
+        }
+        else
+        {
+            log("svr 해제");
+            delete this->svr;
+            this->svr = NULL;
+        }
+    }
+
+    return;
+}
+
+void winchat_core_wxwidgetsFrame::m_tool5OnToolClicked( wxCommandEvent& event )
+{
+    log("접속 버튼 클릭");
+    this->cnt = new Client(m_textCtrl1->GetValue().ToStdString(), "4564");
+    if ( this->cnt->isConnect )
+    {
+        log("cnt 해제");
+        delete this->cnt;
+    }
+    return;
+}
+
+void winchat_core_wxwidgetsFrame::m_tool6OnToolClicked( wxCommandEvent& event )
+{
+    log("해제 버튼 클릭");
+    if ( this->svr != NULL )
+    {
+        delete this->svr;
+    }
+    if ( this->cnt != NULL )
+    {
+        delete this->cnt;
+    }
+
+    return;
 }

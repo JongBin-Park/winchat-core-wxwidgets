@@ -5,10 +5,9 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
+#define LOG_FILE_NAME "log.txt"
 
 using namespace std;
-
-#define LOG_FILE_NAME "log.txt"
 
 void log(string);
 string getTime();

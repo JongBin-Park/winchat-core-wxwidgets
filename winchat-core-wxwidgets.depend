@@ -3048,14 +3048,14 @@
 
 1587517768 c:\users\jongbin\documents\workspace\cpp\winchat-core-wxwidgets\library\mswud\wx\setup.h
 
-1595459575 source:c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\guiframe.cpp
+1595474048 source:c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\guiframe.cpp
 	"wx/wxprec.h"
 	<wx/wx.h>
 	"GUIFrame.h"
 
 1595459362 c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\library\mswud\wx\setup.h
 
-1595459362 c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\guiframe.h
+1595474048 c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\guiframe.h
 	<wx/artprov.h>
 	<wx/xrc/xmlres.h>
 	<wx/string.h>
@@ -3086,22 +3086,32 @@
 1595459362 c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\winchat_core_wxwidgetsapp.h
 	<wx/app.h>
 
-1595465375 c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\winchat_core_wxwidgetsmain.h
+1595490913 c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\winchat_core_wxwidgetsmain.h
 	<wx/wx.h>
 	"common.h"
+	"chat.h"
 	"winchat_core_wxwidgetsApp.h"
 	"GUIFrame.h"
 
-1595465450 source:c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\winchat_core_wxwidgetsmain.cpp
+1595491877 source:c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\winchat_core_wxwidgetsmain.cpp
 	"wx_pch.h"
 	"winchat_core_wxwidgetsMain.h"
 
-1595466035 c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\common.h
+1595473869 c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\common.h
 	<string>
 	<cstdlib>
 	<ctime>
 	<fstream>
 
-1595465407 source:c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\common.cpp
+1595478399 source:c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\common.cpp
+	"common.h"
+
+1595491994 source:c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\chat.cpp
+	"chat.h"
+
+1595490208 c:\users\19042202\developer\cppworkspace\winchat-core-wxwidgets\chat.h
+	<winsock2.h>
+	<string>
+	<thread>
 	"common.h"
 

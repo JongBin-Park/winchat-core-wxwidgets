@@ -25,7 +25,7 @@ string getTime()
     int totalSeconds = time(NULL);
     int currentSecond = totalSeconds % 60;
     int totalMinutes = totalSeconds / 60;
-    int currentMinute = totalMinutes & 60;
+    int currentMinute = totalMinutes % 60;
     int totalHours = totalMinutes / 60;
     int currentHour = totalHours % 24 + 9 > 24 ? totalHours % 24 - 15 : totalHours % 24 + 9;
 

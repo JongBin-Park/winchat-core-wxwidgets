@@ -46,6 +46,7 @@ class GUIFrame : public wxFrame
 		wxToolBarToolBase* m_tool5;
 		wxToolBarToolBase* m_tool6;
 		wxTextCtrl* m_textCtrl3;
+		wxTextCtrl* m_textCtrl41;
 		wxTextCtrl* m_textCtrl4;
 		wxStatusBar* statusBar;
 
@@ -53,6 +54,9 @@ class GUIFrame : public wxFrame
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnQuit( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }
+		virtual void m_tool4OnToolClicked( wxCommandEvent& event ) { event.Skip(); }
+		virtual void m_tool5OnToolClicked( wxCommandEvent& event ) { event.Skip(); }
+		virtual void m_tool6OnToolClicked( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:

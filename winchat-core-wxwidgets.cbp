@@ -23,6 +23,7 @@
 				</ResourceCompiler>
 				<Linker>
 					<Add library="library/libwxmsw30ud.a" />
+					<Add library="library/ws2_32.dll" />
 					<Add directory="library" />
 				</Linker>
 			</Target>
@@ -65,6 +66,8 @@
 		<Unit filename="GUIFrame.cpp" />
 		<Unit filename="GUIFrame.h" />
 		<Unit filename="WxWizFrame.fbp" />
+		<Unit filename="chat.cpp" />
+		<Unit filename="chat.h" />
 		<Unit filename="common.cpp" />
 		<Unit filename="common.h" />
 		<Unit filename="resource.rc">
