@@ -29,6 +29,9 @@ class winchat_core_wxwidgetsFrame: public GUIFrame
         Server *svr;
         Client *cnt;
 
+        pthread_t runStartup;
+        pthread_t runProcessMessage;
+
         virtual void OnClose(wxCloseEvent& event);
         virtual void OnQuit(wxCommandEvent& event);
         virtual void OnAbout(wxCommandEvent& event);

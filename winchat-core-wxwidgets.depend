@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1595415856 source:c:\users\jongbin\documents\workspace\cpp\winchat-core-wxwidgets\guiframe.cpp
+1595501023 source:c:\users\jongbin\documents\workspace\cpp\winchat-core-wxwidgets\guiframe.cpp
 	"wx/wxprec.h"
 	<wx/wx.h>
 	"GUIFrame.h"
@@ -2957,7 +2957,7 @@
 1587517768 c:\wxwidgets-3.0.5\include\wx\cocoa\mdi.h
 	"wx/frame.h"
 
-1595415316 c:\users\jongbin\documents\workspace\cpp\winchat-core-wxwidgets\guiframe.h
+1595501023 c:\users\jongbin\documents\workspace\cpp\winchat-core-wxwidgets\guiframe.h
 	<wx/artprov.h>
 	<wx/xrc/xmlres.h>
 	<wx/string.h>
@@ -3037,12 +3037,14 @@
 1595413750 c:\users\jongbin\documents\workspace\cpp\winchat-core-wxwidgets\winchat_core_wxwidgetsapp.h
 	<wx/app.h>
 
-1595414022 c:\users\jongbin\documents\workspace\cpp\winchat-core-wxwidgets\winchat_core_wxwidgetsmain.h
+1595513290 c:\users\jongbin\documents\workspace\cpp\winchat-core-wxwidgets\winchat_core_wxwidgetsmain.h
 	<wx/wx.h>
+	"common.h"
+	"chat.h"
 	"winchat_core_wxwidgetsApp.h"
 	"GUIFrame.h"
 
-1595413750 source:c:\users\jongbin\documents\workspace\cpp\winchat-core-wxwidgets\winchat_core_wxwidgetsmain.cpp
+1595513841 source:c:\users\jongbin\documents\workspace\cpp\winchat-core-wxwidgets\winchat_core_wxwidgetsmain.cpp
 	"wx_pch.h"
 	"winchat_core_wxwidgetsMain.h"
 
@@ -3114,4 +3116,23 @@
 	<string>
 	<thread>
 	"common.h"
+
+1595501280 c:\users\jongbin\documents\workspace\cpp\winchat-core-wxwidgets\common.h
+	<string>
+	<cstdlib>
+	<ctime>
+	<fstream>
+	<pthread.h>
+
+1595513293 c:\users\jongbin\documents\workspace\cpp\winchat-core-wxwidgets\chat.h
+	<winsock2.h>
+	<string>
+	<thread>
+	"common.h"
+
+1595501023 source:c:\users\jongbin\documents\workspace\cpp\winchat-core-wxwidgets\common.cpp
+	"common.h"
+
+1595513958 source:c:\users\jongbin\documents\workspace\cpp\winchat-core-wxwidgets\chat.cpp
+	"chat.h"
 

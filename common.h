@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
+#include <pthread.h>
 #define LOG_FILE_NAME "log.txt"
 
 using namespace std;

@@ -33,7 +33,6 @@ class Server
 public:
     bool isBind;
     bool isListen;
-
 private:
     string ip;
     string port;
@@ -46,12 +45,14 @@ private:
 
     SOCKET acceptSocket;
     sockaddr acceptAddr;
+
+
 public:
     Server(string, string);
     ~Server();
     static string getMyIP();
-    void startup(); // thread : function for to accept client
-    void processMessage(); // thread : function for to process "Message"
+    static void *startup(void *); // thread : function for to accept client
+    static void *processMessage(void *); // thread : function for to process "Message"
 };
 
 class Client
@@ -61,12 +62,13 @@ public:
 private:
     string ip;
     string port;
+    string sender;
 
     WSADATA wsaData;
     SOCKET hSocket;
     SOCKADDR_IN serverAddr;
 public:
-    Client(string, string);
+    Client(string, string, string);
     ~Client();
 
 };

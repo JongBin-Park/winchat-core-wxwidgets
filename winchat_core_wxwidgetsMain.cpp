@@ -82,13 +82,10 @@ void winchat_core_wxwidgetsFrame::m_tool4OnToolClicked( wxCommandEvent& event )
     {
         if ( !this->svr->isListen )
         {
-            std::thread runStartup( &Server::startup, *this->svr );
-        }
-        else
-        {
-            log("svr 해제");
-            delete this->svr;
-            this->svr = NULL;
+            pthread_create( &this->runStartup, NULL, &Server::startup, (void *)this->svr);
+            pthread_detach( this->runStartup );
+            //pthread_create( &this->runProcessMessage, NULL, &Server::processMessage, (void *)this->svr);
+            //pthread_detach( this->runProcessMessage );
         }
     }
 
@@ -98,11 +95,12 @@ void winchat_core_wxwidgetsFrame::m_tool4OnToolClicked( wxCommandEvent& event )
 void winchat_core_wxwidgetsFrame::m_tool5OnToolClicked( wxCommandEvent& event )
 {
     log("접속 버튼 클릭");
-    this->cnt = new Client(m_textCtrl1->GetValue().ToStdString(), "4564");
-    if ( this->cnt->isConnect )
+    this->cnt = new Client(m_textCtrl1->GetValue().ToStdString(), "4564", m_textCtrl41->GetValue().ToStdString());
+    if ( !this->cnt->isConnect )
     {
         log("cnt 해제");
         delete this->cnt;
+        this->cnt = NULL;
     }
     return;
 }
@@ -110,14 +108,13 @@ void winchat_core_wxwidgetsFrame::m_tool5OnToolClicked( wxCommandEvent& event )
 void winchat_core_wxwidgetsFrame::m_tool6OnToolClicked( wxCommandEvent& event )
 {
     log("해제 버튼 클릭");
-    if ( this->svr != NULL )
-    {
+        pthread_cancel( this->runStartup );
+        pthread_cancel( this->runProcessMessage );
         delete this->svr;
-    }
-    if ( this->cnt != NULL )
-    {
+        this->svr = NULL;
         delete this->cnt;
-    }
+        this->cnt = NULL;
+        log("영역 연결 해제 완료");
 
     return;
 }

@@ -129,7 +129,9 @@ Server::Server(string ip, string port)
 {
     this->ip = ip;
     this->port = port;
-    this->isBind = false;
+    this->socketList = new SocketList;
+    this->socketList->sender = "Create first dummy struct";
+    this->socketList->nextPointer = NULL;
 
     if ( WSAStartup ( MAKEWORD(2, 2), &this->wsaData ) != 0 )
     {
@@ -155,11 +157,13 @@ Server::Server(string ip, string port)
         log("IP : " + this->ip + "PORT : " + this->port);
         log("서버 IP/PORT 바인딩 실패");
         this->isBind = false;
+        this->isListen = false;
         return;
     }
     else
     {
         this->isBind = true;
+        this->isListen = false;
     }
 }
 
@@ -197,31 +201,33 @@ string Server::getMyIP()
     return (string)inet_ntoa(addr);//IPv4 주소를 문자열로 출력
 }
 
-void Server::startup()
+void *Server::startup(void * sever)
 {
-    log("*************** 서버 시작 ***************");
-    if ( this->isBind )
+    Server *svr = (Server *)sever;
+    log("*서비스 시작*");
+    if ( svr->isBind )
     {
-        if ( listen ( this->hSocket, SOMAXCONN ) != ERROR_SUCCESS )
+        if ( listen ( svr->hSocket, SOMAXCONN ) != ERROR_SUCCESS )
         {
-            log("IP : " + this->ip + "PORT : " + this->port);
+            log("IP : " + svr->ip + "PORT : " + svr->port);
             log("서버 Listen 실패");
-            this->isListen = false;
-            delete this;
-            return;
+            svr->isListen = false;
+            delete svr;
+            return NULL;
         }
         else
         {
-            this->isListen = true;
+            svr->isListen = true;
+            log("*Listening*");
         }
     }
 
-    while ( this->isListen )
+    while ( 1 == 1 )
     {
-        int length = sizeof(this->acceptAddr);
-        this->acceptSocket = accept( this->hSocket, &acceptAddr, &length );
+        int length = sizeof(svr->acceptAddr);
+        svr->acceptSocket = accept( svr->hSocket, &svr->acceptAddr, &length );
 
-        if ( this->acceptSocket == INVALID_SOCKET )
+        if ( svr->acceptSocket == INVALID_SOCKET )
         {
             log("client accept 실패");
             continue;
@@ -232,21 +238,24 @@ void Server::startup()
             char *sender;
             int len = 0;
             int comResult;
-            comResult = recv( this->acceptSocket, (char*)&len, sizeof(int), 0 );
+            comResult = recv( svr->acceptSocket, (char*)&len, sizeof(int), 0 );
 
             // 사이즈에 맞게 메모리 할당
             if ( comResult > 0 )
+            {
                 sender = new char[len];
+            }
             else
             {
                 log("클라이언트 송신자 사이즈 받기 실패");
                 continue;
             }
 
-            comResult = recv( this->acceptSocket, (char*)sender, len, 0 );
+            comResult = recv( svr->acceptSocket, (char*)sender, len, 0 );
             if ( comResult > 0 )
             {
-                addSocket( &this->socketList, (string)sender, this->acceptSocket);
+                addSocket( &svr->socketList, (string)sender, svr->acceptSocket);
+                log("연결 확인 송신자 : " + (string)sender);
             }
             else
             {
@@ -256,21 +265,23 @@ void Server::startup()
         }
     }
 
-    return;
+    return NULL;
 }
 
-void Server::processMessage()
+void *Server::processMessage(void *sever)
 {
+    Server *svr = (Server *)sever;
     // 수시로 체크해서 처리해줘야 함
     while ( 1 == 1 )
     {
-        SocketList *cursor = this->socketList->nextPointer;
-        while ( cursor != NULL )
+        SocketList *cursor = svr->socketList;
+        while ( cursor->nextPointer != NULL )
         {
+            cursor = cursor->nextPointer;
             // 해당 소켓이 정상인지 확인 후
             if ( cursor->socket == INVALID_SOCKET )
             {
-                delSocket(this->socketList, cursor->sender);
+                delSocket(svr->socketList, cursor->sender);
                 log("접속된 소켓들 중 유효하지 않는 소켓 발견되어 삭제");
                 continue;
             }
@@ -289,20 +300,20 @@ void Server::processMessage()
                     string receipient = msg->receipient;
                     string contents = msg->contents;
 
-                    send( getSocket(this->socketList, receipient), (char*)msg, len, 0 );
+                    send( getSocket(svr->socketList, receipient), (char*)msg, len, 0 );
                 }
             }
-
-            cursor = cursor->nextPointer;
         }
     }
-    return;
+
+    return NULL;
 }
 
-Client::Client(string ip, string port)
+Client::Client(string ip, string port, string sender)
 {
     this->ip = ip;
     this->port = port;
+    this->sender = sender;
 
     if ( WSAStartup( MAKEWORD(2, 2), &wsaData ) != 0 )
     {
@@ -329,6 +340,10 @@ Client::Client(string ip, string port)
     }
     else
     {
+        int len = sender.size();
+        send( this->hSocket, (char*)&len, sizeof(int), 0 );
+        send( this->hSocket, (char*)&sender, len, 0 );
+            log ("송신자 송신 : " + sender);
         this->isConnect = true;
     }
 }
