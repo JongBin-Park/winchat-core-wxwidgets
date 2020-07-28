@@ -2,9 +2,9 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="common.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="chat.h" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="143" topLine="0" />
+			<Cursor1 position="693" topLine="24" />
 		</Cursor>
 	</File>
 	<File name="GUIFrame.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -12,41 +12,9 @@
 			<Cursor1 position="320" topLine="66" />
 		</Cursor>
 	</File>
-	<File name="chat.cpp" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="5336" topLine="13" />
-		</Cursor>
-		<Folding>
-			<Collapse line="5" />
-			<Collapse line="35" />
-			<Collapse line="66" />
-			<Collapse line="93" />
-			<Collapse line="128" />
-			<Collapse line="170" />
-			<Collapse line="176" />
-			<Collapse line="204" />
-			<Collapse line="271" />
-			<Collapse line="312" />
-		</Folding>
-	</File>
 	<File name="winchat_core_wxwidgetsMain.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="780" topLine="13" />
-		</Cursor>
-	</File>
-	<File name="winchat_core_wxwidgetsMain.cpp" open="1" top="1" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2287" topLine="75" />
-		</Cursor>
-	</File>
-	<File name="chat.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="693" topLine="24" />
-		</Cursor>
-	</File>
-	<File name="GUIFrame.h" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1841" topLine="26" />
+			<Cursor1 position="780" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="common.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -54,9 +22,40 @@
 			<Cursor1 position="570" topLine="9" />
 		</Cursor>
 	</File>
+	<File name="common.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="143" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="GUIFrame.h" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1841" topLine="24" />
+		</Cursor>
+	</File>
+	<File name="chat.cpp" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5336" topLine="40" />
+		</Cursor>
+		<Folding>
+			<Collapse line="5" />
+			<Collapse line="60" />
+			<Collapse line="93" />
+			<Collapse line="127" />
+			<Collapse line="163" />
+			<Collapse line="173" />
+			<Collapse line="197" />
+			<Collapse line="269" />
+			<Collapse line="311" />
+		</Folding>
+	</File>
 	<File name="resource.rc" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="22" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="winchat_core_wxwidgetsMain.cpp" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2287" topLine="75" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

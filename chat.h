@@ -2,75 +2,90 @@
 #define __CHAT_H__
 
 #include <winsock2.h>
+#include <pthread.h>
 #include <string>
-#include <thread>
+
 #include "common.h"
 
-// 연결된 소켓들 리스트
-typedef struct __SocketList
-{
-    string sender;
-    SOCKET socket;
-    struct __SocketList *nextPointer;
-} SocketList;
+using namespace std;
 
-void addSocket(SocketList **, string, SOCKET);
-void delSocket(SocketList *, string);
-SOCKET getSocket(SocketList *, string);
-SOCKET *getAllSocket(SocketList *);
-
-// chat에서 사용할 메세지 구조체
 typedef struct __Message
 {
-    string dateTime;
-    string sender;
-    string receipient;
+    string from;
+    string to;
     string contents;
 } Message;
+
+// Queue
+typedef struct __Sockets
+{
+    string id;
+    SOCKET *socket;
+    struct __Sockets *ptr;
+} Sockets;
+// Queue function
+void initSockets(Sockets **);
+SOCKET* getSocket(Sockets *, string);
+void addSocket(Sockets *, string, SOCKET *);
+void delSocket(Sockets *, string);
 
 class Server
 {
 public:
-    bool isBind;
+    // Status variable
+    pthread_t th1;
+    pthread_t th2;
+    pthread_mutex_t mutex;
+
     bool isListen;
 private:
-    string ip;
-    string port;
+    // Member variable
+    Sockets *list;
 
     WSADATA wsaData;
     SOCKET hSocket;
-    SOCKADDR_IN serverAddr;
+    SOCKADDR_IN svrAddr;
 
-    SocketList *socketList;
-
-    SOCKET acceptSocket;
-    sockaddr acceptAddr;
-
+    SOCKET *hCntSock;
+    sockaddr cntAddr;
 
 public:
+    // Member function
     Server(string, string);
     ~Server();
-    static string getMyIP();
-    static void *startup(void *); // thread : function for to accept client
-    static void *processMessage(void *); // thread : function for to process "Message"
+    void runThread(Server *svr);
+    static void* startAccept(void *);
+    static void* processMessage(void *);
+    void stopThread(Server *svr);
 };
 
 class Client
 {
 public:
+    // Status variable
+    pthread_t th1;
+    pthread_t th2;
+    pthread_mutex_t mutex;
+
     bool isConnect;
 private:
-    string ip;
-    string port;
-    string sender;
+    // Member variable
+    string id;
 
     WSADATA wsaData;
     SOCKET hSocket;
-    SOCKADDR_IN serverAddr;
+    SOCKADDR_IN svrAddr;
+
 public:
+    // Member function
     Client(string, string, string);
     ~Client();
+    void runThread(Client *cnt);
+    static void* startReceive(void *);
+    void sendMessage(string, string);
+    void stopThread(Client *cnt);
 
 };
+
 
 #endif // __CHAT_H__

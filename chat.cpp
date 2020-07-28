@@ -2,355 +2,391 @@
 
 using namespace std;
 
-void addSocket(SocketList **socketList, string sender, SOCKET socket)
+void initSockets( Sockets **list )
 {
-    log("소켓 리스트 추가");
-    SocketList *base;
-
-    // because of declared double pointer
-    if ( *socketList == NULL )
-        *socketList = new SocketList();
-
-    base = *socketList;
-
-    string newSender = sender;
-    SOCKET newSocket = socket;
-
-    SocketList *temp = new SocketList();
-    temp->sender = newSender;
-    temp->socket = newSocket;
-
-    // Queue
-    while ( base->nextPointer != NULL )
+    if( *list == nullptr )
     {
-        // Find point
-        base = base->nextPointer;
+        *list = new Sockets;
+        (*list)->ptr = nullptr;
+        log("Initialize socket list");
     }
-
-    base->nextPointer = temp;
-    log("추가 완료");
     return;
 }
 
-void delSocket(SocketList *socketList, string sender)
+SOCKET* getSocket( Sockets *list, string id )
 {
-    log(sender + "를(을) 소켓 리스트에서 삭제");
-
-    if ( socketList == NULL )
+    if( list == nullptr )
     {
-        log("리스트가 비어있음");
+        log("List is nullptr");
+        return nullptr;
+    }
+
+    Sockets *cur = list;
+    while( cur != nullptr )
+    {
+        if( cur->id.compare(id) == 0 )
+        {
+            log( "Find socket : " + cur->id );
+            return cur->socket;
+        }
+
+        cur = cur->ptr;
+    }
+}
+
+void addSocket( Sockets *list, string id, SOCKET *socket )
+{
+    if( list == nullptr )
+    {
+        log( "List is nullptr" );
         return;
     }
 
-    SocketList *base = socketList->nextPointer;
-    SocketList *prePointer = NULL;
-
-    while ( base != NULL )
+    Sockets *cur = list;
+    while( cur->ptr != nullptr )
     {
-        if ( sender.compare(base->sender) == 0 )
-        {
-            prePointer->nextPointer = base->nextPointer;
-            delete base;
-        }
-        else
-        {
-            prePointer = base;
-            base = base->nextPointer;
-        }
+        cur = cur->ptr;
     }
+    Sockets *newSocket = new Sockets;
+    newSocket->id = id;
+    newSocket->socket = socket;
+    newSocket->ptr = nullptr;
 
-    log(sender + "를(을) 소켓 리스트에서 삭제 완료");
-    return;
+    cur->ptr = newSocket;
+
+    log( "Add Socket : " + id );
 }
 
-SOCKET getSocket(SocketList *socketList, string sender)
+void delSocket( Sockets *list, string id )
 {
-    SOCKET result;
-
-    SocketList *cursor = socketList->nextPointer;
-
-    while ( cursor != NULL )
+    if( list == nullptr )
     {
-        if ( sender.compare(cursor->sender) == 0 )
+        log( "List is nullptr" );
+        return;
+    }
+
+    Sockets *cur = list->ptr;
+    Sockets *preCur = nullptr;
+    while( cur != nullptr )
+    {
+        if( cur->id.compare(id) == 0 )
         {
-            result = cursor->socket;
-            cursor = NULL;
-            log(sender + " 의 소켓 반환");
-        }
-        else
-        {
-            if ( cursor->nextPointer != NULL )
-                cursor = cursor->nextPointer;
+            if( preCur == nullptr )
+            {
+                list->ptr = cur->ptr;
+                delete cur;
+                log( "Delete Socket : " + id );
+            }
             else
-                cursor = NULL;
-                log(sender + " 의 소켓 없음");
+            {
+                preCur->ptr = cur->ptr;
+                delete cur;
+                log( "Delete Socket : " + id );
+            }
         }
+
+        cur = cur->ptr;
+        preCur = cur;
     }
-
-    return result;
-}
-
-SOCKET *getAllSocket(SocketList *socketList)
-{
-    int i;
-    int length = 0;
-    SOCKET *result;
-
-    SocketList *cursor = socketList;
-
-    while ( cursor->nextPointer != NULL )
-    {
-        length++;
-        cursor = cursor->nextPointer;
-    }
-
-    if ( length != 0 )
-    {
-        result = new SOCKET[length];
-
-        cursor = socketList;
-        for ( i = 0 ; i < length ; i++ )
-        {
-            result[i] = cursor->nextPointer->socket;
-            cursor = cursor->nextPointer;
-        }
-    }
-    else
-    {
-        log("소켓이 비어있음");
-        result = NULL;
-    }
-
-    log("모든 소켓 반환");
-    return result;
 }
 
 Server::Server(string ip, string port)
 {
-    this->ip = ip;
-    this->port = port;
-    this->socketList = new SocketList;
-    this->socketList->sender = "Create first dummy struct";
-    this->socketList->nextPointer = NULL;
+    // Initialize Status variable
+    this->isListen = false;
+    this->list = nullptr;
+    initSockets(&this->list);
 
-    if ( WSAStartup ( MAKEWORD(2, 2), &this->wsaData ) != 0 )
+    // Initialize mutex
+    pthread_mutex_init( &this->mutex, NULL );
+
+    // Initialize server socket
+    if( WSAStartup( MAKEWORD( 2, 2 ), &this->wsaData) != 0 )
     {
-        log("IP : " + this->ip + " PORT : " + this->port);
-        log("서버 WSA Start Up 실패");
+        log( "Failed WSAStartup()" );
         return;
     }
 
-    this->hSocket = socket( PF_INET, SOCK_STREAM, 0 );
-    if ( this->hSocket == INVALID_SOCKET )
+    hSocket = socket( PF_INET, SOCK_STREAM, 0 );
+    if( hSocket == INVALID_SOCKET )
     {
-        log("IP : " + this->ip + "PORT : " + this->port);
-        log("서버 소켓 생성 실패");
+        log( "Failed socket()" );
         return;
     }
 
-    this->serverAddr.sin_family = AF_INET;
-    this->serverAddr.sin_addr.s_addr = inet_addr(ip.c_str());
-    this->serverAddr.sin_port = htons(stoi(port));
+    svrAddr.sin_family = AF_INET;
+    svrAddr.sin_addr.s_addr = inet_addr( ip.c_str() );
+    svrAddr.sin_port = htons( stoi(port) );
 
-    if ( bind( this->hSocket, (LPSOCKADDR)&this->serverAddr, sizeof(this->serverAddr) ) != ERROR_SUCCESS )
+    if( bind( this->hSocket, (LPSOCKADDR)&this->svrAddr, sizeof( this->svrAddr ) ) != ERROR_SUCCESS )
     {
-        log("IP : " + this->ip + "PORT : " + this->port);
-        log("서버 IP/PORT 바인딩 실패");
-        this->isBind = false;
-        this->isListen = false;
+        log( "Failed bind()" );
+        return;
+    }
+
+    if( listen( this->hSocket, SOMAXCONN ) != ERROR_SUCCESS )
+    {
+        log( "Failed listen()" );
         return;
     }
     else
     {
-        this->isBind = true;
-        this->isListen = false;
+        this->isListen = true;
     }
 }
 
 Server::~Server()
 {
-    closesocket(this->hSocket);
-    WSACleanup();
+    if( this->isListen )
+    {
+        closesocket( this->hSocket );
+        WSACleanup();
+        log("Clean server class");
+    }
 }
 
-string Server::getMyIP()
+void Server::runThread(Server *server)
 {
-    WSADATA wsadata;
-    WSAStartup( MAKEWORD(2,2), &wsadata );
-    IN_ADDR addr = {0,};
-
-    char localhostname[MAX_PATH];
-
-    if(gethostname(localhostname, MAX_PATH) == SOCKET_ERROR)//호스트 이름 얻어오기
-    {
-        return NULL;
-    }
-    HOSTENT *ptr = gethostbyname(localhostname);//호스트 엔트리 얻어오기
-    while(ptr && ptr->h_name)
-    {
-        if(ptr->h_addrtype == PF_INET)//IPv4 주소 타입일 때
-        {
-            memcpy(&addr, ptr->h_addr_list[0], ptr->h_length);//메모리 복사
-            break;//반복문 탈출
-        }
-        ptr++;
-    }
-
-    WSACleanup();
-
-    return (string)inet_ntoa(addr);//IPv4 주소를 문자열로 출력
+    pthread_create( &this->th1, NULL, &Server::startAccept, server);
+    pthread_create( &this->th2, NULL, &Server::processMessage, server);
 }
 
-void *Server::startup(void * sever)
+void* Server::startAccept(void *server)
 {
-    Server *svr = (Server *)sever;
-    log("*서비스 시작*");
-    if ( svr->isBind )
+    log("run Thread1 (startAccept)");
+
+    Server *svr = (Server *)server;
+
+    int len = 0;
+    len = sizeof( svr->cntAddr );
+
+    while( svr->isListen )
     {
-        if ( listen ( svr->hSocket, SOMAXCONN ) != ERROR_SUCCESS )
+        pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+        pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+
+        svr->hCntSock = new SOCKET;
+        *svr->hCntSock = accept( svr->hSocket, &svr->cntAddr, &len );
+
+        // Parameter shared thread1, thread2 (Critical session)
+        pthread_mutex_lock( &svr->mutex );
+        if( *svr->hCntSock != INVALID_SOCKET )
         {
-            log("IP : " + svr->ip + "PORT : " + svr->port);
-            log("서버 Listen 실패");
-            svr->isListen = false;
-            delete svr;
-            return NULL;
+            // Get ID
+            int length = 0;
+            recv( *svr->hCntSock, (char*)&length, sizeof(int), 0 );
+
+            log( to_string(length) + " 받음");
+
+            char *recvID = NULL;
+            recvID = new char[length];
+            recv( *svr->hCntSock, (char*)recvID, length, 0 );
+
+            if( sizeof(recvID) > 0 )
+            {
+                log( "Get ID : " + (string)recvID );
+                addSocket( svr->list, (string)recvID, svr->hCntSock );
+                log( "Add ID : " + (string)recvID );
+            }
         }
-        else
-        {
-            svr->isListen = true;
-            log("*Listening*");
-        }
+        pthread_mutex_unlock( &svr->mutex );
     }
-
-    while ( 1 == 1 )
-    {
-        int length = sizeof(svr->acceptAddr);
-        svr->acceptSocket = accept( svr->hSocket, &svr->acceptAddr, &length );
-
-        if ( svr->acceptSocket == INVALID_SOCKET )
-        {
-            log("client accept 실패");
-            continue;
-        }
-        else
-        {
-            // 아이디(송신자)를 받아야함
-            char *sender;
-            int len = 0;
-            int comResult;
-            comResult = recv( svr->acceptSocket, (char*)&len, sizeof(int), 0 );
-
-            // 사이즈에 맞게 메모리 할당
-            if ( comResult > 0 )
-            {
-                sender = new char[len];
-            }
-            else
-            {
-                log("클라이언트 송신자 사이즈 받기 실패");
-                continue;
-            }
-
-            comResult = recv( svr->acceptSocket, (char*)sender, len, 0 );
-            if ( comResult > 0 )
-            {
-                addSocket( &svr->socketList, (string)sender, svr->acceptSocket);
-                log("연결 확인 송신자 : " + (string)sender);
-            }
-            else
-            {
-                log("클라이언트 송신자 받기 실패");
-                continue;
-            }
-        }
-    }
-
     return NULL;
 }
 
-void *Server::processMessage(void *sever)
+void* Server::processMessage(void *server)
 {
-    Server *svr = (Server *)sever;
-    // 수시로 체크해서 처리해줘야 함
-    while ( 1 == 1 )
+    log("run Thread2 (processMessage)");
+
+    Server *svr = (Server *)server;
+
+    int length = 0;
+
+    while( svr->isListen )
     {
-        SocketList *cursor = svr->socketList;
-        while ( cursor->nextPointer != NULL )
+        pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+        pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+
+        Sockets *cur = svr->list->ptr;
+
+        // Parameter shared thread1, thread2 (Critical session)
+        pthread_mutex_lock( &svr->mutex );
+
+        while( cur != nullptr )
         {
-            cursor = cursor->nextPointer;
-            // 해당 소켓이 정상인지 확인 후
-            if ( cursor->socket == INVALID_SOCKET )
+            if( *cur->socket != INVALID_SOCKET && cur != nullptr )
             {
-                delSocket(svr->socketList, cursor->sender);
-                log("접속된 소켓들 중 유효하지 않는 소켓 발견되어 삭제");
-                continue;
-            }
-
-            // 해당하는 소켓의 Message 구조체 수신을 알아봐야한다.
-            int len = 0;
-            Message *msg;
-
-            if ( recv( cursor->socket, (char*)&len, sizeof(int), 0 ) > 0 )
-            {
-                msg = new Message[len];
-                if ( recv ( cursor->socket, (char*)msg, len, 0 ) > 0 )
+                if ( recv( *cur->socket, (char*)&length, sizeof(int), 0 ) > 0 )
                 {
-                    // 메세지 받았고, 클라이언트 찾아서 보내줘야 함
-                    string sender = msg->sender;
-                    string receipient = msg->receipient;
-                    string contents = msg->contents;
+                    log( "Get message size : " + to_string(length) );
+                    char *recvMsg = new char[length];
+                    recv( *cur->socket, (char*)recvMsg, length, 0 );
+                    Message *msg = (Message*)recvMsg;
 
-                    send( getSocket(svr->socketList, receipient), (char*)msg, len, 0 );
+                    log( "Receive message from client" );
+                    log( "to : " + msg->to );
+                    log( "from : " + msg->from );
+                    log( "contents : " + msg->contents );
+
+                    Sockets *tmp = svr->list->ptr;
+                    while( tmp != nullptr)
+                    {
+                        if( msg->to.compare( tmp->id ) == 0 )
+                        {
+                            send( *cur->socket, (char*)&length, sizeof(int), 0 );
+                            send( *cur->socket, (char*)recvMsg, length, 0 );
+                            log("Send message to client");
+                        }
+                        tmp = tmp->ptr;
+                    }
+                    delete recvMsg;
                 }
-            }
-        }
-    }
 
+            }
+            else
+            {
+                closesocket( *cur->socket );
+                log( "Delete invalid socket");
+            }
+            cur = cur->ptr;
+        }
+        pthread_mutex_unlock( &svr->mutex );
+    }
     return NULL;
 }
 
-Client::Client(string ip, string port, string sender)
+void Server::stopThread(Server *server)
 {
-    this->ip = ip;
-    this->port = port;
-    this->sender = sender;
+    pthread_cancel( server->th1 );
+    pthread_cancel( server->th2 );
+    pthread_join( server->th1, NULL );
+    pthread_join( server->th2, NULL );
 
-    if ( WSAStartup( MAKEWORD(2, 2), &wsaData ) != 0 )
+    return;
+}
+
+Client::Client(string ip, string port, string id)
+{
+    // Initialize Status variable
+    this->isConnect = false;
+    this->id = id;
+
+    // Initialize mutex
+    pthread_mutex_init( &this->mutex, NULL );
+
+    // Initialize server socket
+    if( WSAStartup( MAKEWORD( 2, 2 ), &this->wsaData) != 0 )
     {
-        log("클라이언트 WSA Startup 실패");
+        log( "Failed WSAStartup()" );
         return;
     }
 
-    this->hSocket = socket( PF_INET, SOCK_STREAM, 0 );
-    if ( this->hSocket == INVALID_SOCKET )
+    hSocket = socket( PF_INET, SOCK_STREAM, 0 );
+    if( hSocket == INVALID_SOCKET )
     {
-        log("클라이언트 소켓 생성 실패");
+        log( "Failed socket()" );
         return;
     }
 
-    this->serverAddr.sin_family = AF_INET;
-    this->serverAddr.sin_addr.s_addr = inet_addr( ip.c_str() );
-    this->serverAddr.sin_port = htons( stoi(port) );
+    svrAddr.sin_family = AF_INET;
+    svrAddr.sin_addr.s_addr = inet_addr( ip.c_str() );
+    svrAddr.sin_port = htons( stoi(port) );
 
-    if ( connect( this->hSocket, (LPSOCKADDR)&this->serverAddr, sizeof(this->serverAddr) ) != ERROR_SUCCESS )
+    if( connect( this->hSocket, (LPSOCKADDR)&this->svrAddr, sizeof(this->svrAddr) ) != ERROR_SUCCESS )
     {
-        log("클라이언트 서버연결 실패");
-        this->isConnect = false;
+        log("Failed connect()");
         return;
     }
     else
     {
-        int len = sender.size();
-        send( this->hSocket, (char*)&len, sizeof(int), 0 );
-        send( this->hSocket, (char*)&sender, len, 0 );
-            log ("송신자 송신 : " + sender);
+        int length = id.size();
+        send( this->hSocket, (char*)&length, sizeof(int), 0 );
+        send( this->hSocket, (char*)id.c_str(), length, 0 );
+
         this->isConnect = true;
     }
 }
 
 Client::~Client()
 {
-    closesocket(this->hSocket);
-    WSACleanup();
+    if( this->isConnect )
+    {
+        closesocket( this->hSocket );
+        WSACleanup();
+        log("Clean client class");
+    }
 }
 
+void Client::runThread(Client *cnt)
+{
+    pthread_create( &this->th1, NULL, &Client::startReceive, (void *)cnt );
+}
+
+void* Client::startReceive(void *client)
+{
+    log("run Thread1 (startReceive)");
+
+    int length = 0;
+
+    Client *cnt = (Client *)client;
+    char *recvMsg;
+    Message *msg;
+    while( cnt->isConnect )
+    {
+        pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+        pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+
+        // Parameter shared (Critical session)
+        pthread_mutex_lock( &cnt->mutex );
+        if( recv( cnt->hSocket, (char*)&length, sizeof(int), 0 ) > 0 )
+        {
+            recvMsg = new char[length];
+
+            recv( cnt->hSocket, (char*)recvMsg, length, 0 );
+            msg = (Message *)recvMsg;
+
+            log("Receive message from server");
+            log("to : " + msg->to );
+            log("from : " + msg->from );
+            log("contents : " + msg->contents );
+
+            delete recvMsg;
+        }
+
+
+        pthread_mutex_unlock( &cnt->mutex );
+    }
+}
+
+void Client::sendMessage(string contents, string to)
+{
+    Message msg;
+    msg.from = this->id;
+    msg.to = to;
+    msg.contents = contents;
+
+    if( this->isConnect )
+    {
+        int length = 0;
+        length = sizeof(msg);
+
+        send( this->hSocket, (char*)&length, sizeof(int), 0 );
+        send( this->hSocket, (char*)&msg, length, 0 );
+
+        log("Send message");
+        return;
+    }
+    else
+    {
+        log("Not connected");
+        return;
+    }
+}
+
+void Client::stopThread(Client *client)
+{
+    pthread_cancel( client->th1 );
+    pthread_join( client->th1, NULL );
+
+    return;
+}

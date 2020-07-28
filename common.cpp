@@ -4,34 +4,44 @@ using namespace std;
 
 void log(string contents)
 {
-    string logContents = getTime() + " : " + contents;
     ofstream log;
 
-    log.open( LOG_FILE_NAME, std::ios::app );
+    log.open( "log.txt", ios::app );
 
     if ( log.is_open() )
     {
-        log.write( (logContents + "\n").c_str(), logContents.size() + 1 );
+        string logContents = getCurrentTime() + " - " + contents + "\n";
+        log.write( logContents.c_str(), logContents.size() + 1 );
+        cout << logContents;
         log.close();
     }
 
     return;
 }
 
-string getTime()
+string getCurrentTime()
 {
-    string currentTime;
+    string result = "";
 
     int totalSeconds = time(NULL);
     int currentSecond = totalSeconds % 60;
     int totalMinutes = totalSeconds / 60;
     int currentMinute = totalMinutes % 60;
     int totalHours = totalMinutes / 60;
-    int currentHour = totalHours % 24 + 9 > 24 ? totalHours % 24 - 15 : totalHours % 24 + 9;
+    int currentHour = totalHours % 24;
 
-    currentTime = to_string(currentHour) + ":";
-    currentTime += to_string(currentMinute) + ":";
-    currentTime += to_string(currentSecond);
+    if ( currentHour > 24 )
+    {
+        currentHour -= 15;
+    }
+    else
+    {
+        currentHour += 9;
+    }
 
-    return currentTime;
+    result += to_string(currentHour) + ":";
+    result += to_string(currentMinute) + ":";
+    result += to_string(currentSecond);
+
+    return result;
 }
